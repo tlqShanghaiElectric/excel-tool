@@ -1,0 +1,3 @@
+VAR
+	g_ChannelDataFull : g_ChannelDataFullName;
+END_VAR
