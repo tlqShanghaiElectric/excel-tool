@@ -9,7 +9,32 @@ import openpyxl
 
 typeDict = {"bool":"BOOL", "double":"LREAL", "float": "REAL", "int":"DINT", "unsigned int":"DWORD"}
 
-file = "g_pChannelData.xlsx"
-workbook = openpyxl.load_workbook(file)
+fileName = "g_pChannelData.xlsx"
+workbook = openpyxl.load_workbook(fileName)
 sheet1 = workbook["Sheet1"]
-cell = sheet1.cell(row=3, column=4)
+# cell = sheet1.cell(row=3, column=4)
+# print(sheet1.max_row)
+
+structString = ""
+newStructName = "g_ChannelDataFullName"
+structBeginString = "TYPE" + "\n" + "\t" + newStructName + " : STRUCT" + "\n"
+structMainString = ""
+for i in range(2, sheet1.max_row+1):
+    cellForLongName = sheet1.cell(row = i, column = 4)
+    longName = cellForLongName.value
+    cellForType = sheet1.cell(row = i, column = 2)
+    typeName = cellForType.value
+    cellForShortName = sheet1.cell(row = i, column = 5)
+    shortName = cellForShortName.value
+    name = longName if len(longName) < 32 else shortName
+    if "[" not in longName:
+        structMainString += "\t" * 2 + name + " : " + typeDict.get(typeName)  + ";\n"
+    else:
+        index1 = longName.find("[")
+        index2 = longName.find("]")
+        num = longName[index1+1: index2]
+        structMainString += "\t" * 2 + name[:index1] + " : " + "ARRAY[0.." + num + "] OF " + typeDict.get(typeName) + ";\n"
+
+structEndString = "\t" + "END_STRUCT;\n" + "END_TYPE"
+structString = structBeginString + structMainString + structEndString
+
