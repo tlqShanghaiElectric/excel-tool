@@ -16,6 +16,7 @@ sheet1 = workbook["Sheet1"]
 # print(sheet1.max_row)
 
 structString = ""
+newStructTypeName = "g_ChannelDataFull"
 newStructName = "g_ChannelDataFullName"
 structBeginString = "TYPE" + "\n" + "\t" + newStructName + " : STRUCT" + "\n"
 structMainString = ""
@@ -38,3 +39,13 @@ for i in range(2, sheet1.max_row+1):
 structEndString = "\t" + "END_STRUCT;\n" + "END_TYPE"
 structString = structBeginString + structMainString + structEndString
 
+
+with open("Types.typ", 'w') as f:
+    f.write(structString)
+
+#connect struct name to struct type
+connectionLanguage = "VAR\n\t" + newStructTypeName + " : " + newStructName + ";\n" + "END_VAR"
+with open("Variables.var", 'w') as f:
+    f.write(connectionLanguage)
+
+    
