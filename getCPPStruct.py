@@ -27,12 +27,12 @@ for i in range(2, sheet1.max_row+1):
     cellForShortName = sheet1.cell(row = i, column = 5)
     shortName = cellForShortName.value
     name = longName if len(longName) < 32 else shortName
-    if "[" not in longName:
+    if "[" not in name:
         structMainString += "\t" * 2 + name + " : " + typeDict.get(typeName)  + ";\n"
     else:
-        index1 = longName.find("[")
-        index2 = longName.find("]")
-        num = longName[index1+1: index2]
+        index1 = name.find("[")
+        index2 = name.find("]")
+        num = name[index1+1: index2]
         structMainString += "\t" * 2 + name[:index1] + " : " + "ARRAY[0.." + num + "] OF " + typeDict.get(typeName) + ";\n"
 
 structEndString = "\t" + "END_STRUCT;\n" + "END_TYPE"
