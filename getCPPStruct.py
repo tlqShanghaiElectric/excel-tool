@@ -7,7 +7,8 @@ Created on Fri May 25 10:51:24 2018
 
 import openpyxl
 
-typeDict = {"bool":"BOOL", "double":"LREAL", "float": "REAL", "int":"DINT", "unsigned int":"DWORD"}
+typeDict = {"bool":"BOOL", "double":"LREAL", "float": "REAL", \
+            "int":"DINT", "unsigned int":"DWORD"}
 
 fileName = "g_pChannelData.xlsx"
 workbook = openpyxl.load_workbook(fileName)
@@ -18,7 +19,8 @@ sheet1 = workbook["Sheet1"]
 structString = ""
 newStructTypeName = "g_ChannelDataFull"
 newStructName = "g_ChannelDataFullName"
-structBeginString = "TYPE" + "\n" + "\t" + newStructName + " : STRUCT" + "\n"
+structBeginString = "TYPE" + "\n" + "\t" + newStructName \
+                    + " : STRUCT" + "\n"
 structMainString = ""
 for i in range(2, sheet1.max_row+1):
     cellForLongName = sheet1.cell(row = i, column = 4)
@@ -29,12 +31,15 @@ for i in range(2, sheet1.max_row+1):
     shortName = cellForShortName.value
     name = longName if len(longName) < 32 else shortName
     if "[" not in name:
-        structMainString += "\t" * 2 + name + " : " + typeDict.get(typeName)  + ";\n"
+        structMainString += "\t" * 2 + name + " : " \
+                            + typeDict.get(typeName)  + ";\n"
     else:
         index1 = name.find("[")
         index2 = name.find("]")
         num = name[index1+1: index2]
-        structMainString += "\t" * 2 + name[:index1] + " : " + "ARRAY[0.." + num + "] OF " + typeDict.get(typeName) + ";\n"
+        structMainString += "\t" * 2 + name[:index1] + " : " \
+                            + "ARRAY[0.." + num + "] OF " \
+                            + typeDict.get(typeName) + ";\n"
 
 structEndString = "\t" + "END_STRUCT;\n" + "END_TYPE"
 structString = structBeginString + structMainString + structEndString
@@ -44,7 +49,8 @@ with open("Types.typ", 'w') as f:
     f.write(structString)
 
 #connect struct name to struct type
-connectionLanguage = "VAR\n\t" + newStructTypeName + " : " + newStructName + ";\n" + "END_VAR"
+connectionLanguage = "VAR\n\t" + newStructTypeName + " : " \
+                    + newStructName + ";\n" + "END_VAR"
 with open("Variables.var", 'w') as f:
     f.write(connectionLanguage)
 
