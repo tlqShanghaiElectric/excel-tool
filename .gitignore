@@ -1,0 +1,8 @@
+
+*.var
+*.st
+setup.py
+main.py
+*.st
+*.device
+*.pyc
