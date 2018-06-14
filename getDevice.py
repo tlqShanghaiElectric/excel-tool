@@ -9,7 +9,6 @@ import openpyxl
 import xml.etree.ElementTree as ET
 
 def convertToDevice():
-    
     def indent(elem, level=0):
         i = "\n" + level*"  "
         j = "\n" + (level-1)*"  "
@@ -33,7 +32,7 @@ def convertToDevice():
     fileName = "g_pChannelData.xlsx"
     workbook = openpyxl.load_workbook(fileName)
     sheet1 = workbook["Sheet1"]
-
+    sheet2 = workbook["mainloop"]
 
     ns_xsi = "http://www.w3.org/2001/XMLSchema-instance"
     ns_xsd = "http://www.w3.org/2001/XMLSchema"
@@ -111,6 +110,33 @@ def convertToDevice():
             ET.SubElement(protocolVariable, "Unit")
             ET.SubElement(protocolVariable, "DisplayNames")
             ET.SubElement(protocolVariable, "RemoteName").text = name
+
+    # sheet2
+    for i in range(2, sheet2.max_row+1):
+        protocolVariable = ET.SubElement(variables, 'ProtocolVariable', \
+                                    attrib={"xsi:type":"PVIProtocolVariable"})
+        
+        # parse from excel to text
+        cellForName = sheet2.cell(row = i, column = 1)
+        name = cellForName.value
+        cellForType = sheet2.cell(row = i, column = 2)
+        typeName = cellForType.value
+        cellForDefaultValue = sheet2.cell(row = i, column = 3)
+        defaultValue = cellForDefaultValue.value
+        
+        # text to xml
+        ET.SubElement(protocolVariable, "Name").text = name
+        ET.SubElement(protocolVariable, "Description")
+        ET.SubElement(protocolVariable, "VariableType")\
+                            .text = typeDict.get(typeName)
+        ET.SubElement(protocolVariable, "ArraySize").text = "1"
+        ET.SubElement(protocolVariable, "DefaultVal").text = str(defaultValue)
+        ET.SubElement(protocolVariable, "MinVal")
+        ET.SubElement(protocolVariable, "MaxVal")
+        ET.SubElement(protocolVariable, "OutgoingScalingFactor")
+        ET.SubElement(protocolVariable, "Unit")
+        ET.SubElement(protocolVariable, "DisplayNames")
+        ET.SubElement(protocolVariable, "RemoteName").text = name
 
     # Add some other node
     """
@@ -193,6 +219,25 @@ def convertToDevice():
             ET.SubElement(protocolVariableConfig, "Usage").text \
                                         = "ReadContinuously"
             ET.SubElement(protocolVariableConfig, "Record").text = "true"
+
+    # sheet2
+    for i in range(2, sheet2.max_row+1):
+        protocolVariableConfig = ET.SubElement(variableConfig, \
+                                            "ProtocolVariableConfig")
+        
+        # parse from excel to text
+        cellForName = sheet2.cell(row = i, column = 1)
+        name = cellForName.value
+        cellForType = sheet2.cell(row = i, column = 2)
+        typeName = cellForType.value
+        cellForDefaultValue = sheet2.cell(row = i, column = 3)
+        defaultValue = cellForDefaultValue.value
+        
+        # text to xml
+        ET.SubElement(protocolVariableConfig, "Name").text = name
+        ET.SubElement(protocolVariableConfig, "Usage").text \
+                                        = "WriteContinuously"
+        ET.SubElement(protocolVariableConfig, "Record").text = "true"
 
     # add more nodes
     """ <Device>
